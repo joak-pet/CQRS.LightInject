@@ -110,5 +110,61 @@ namespace CQRS.LightInject.Tests
                 anotherSampleCommand.WasHandled.Should().BeTrue();
             }
         }
+
+        [Fact]
+        public async Task ShouldExecuteAbstractedOpenGenericCommandCommandHandlerWithSpecificCommandType()
+        {
+            var container = new ServiceContainer();
+            container.RegisterCommandHandlers();
+            using (var scope = container.BeginScope())
+            {
+                var commandExecutor = scope.GetInstance<ICommandExecutor>();
+                var command = new SampleOpenGenericCommand();
+                await commandExecutor.ExecuteAsync(command);
+                command.WasHandled.Should().BeTrue();
+            }
+        }
+
+        [Fact]
+        public async Task ShouldExecuteAbstractedOpenGenericQueryQueryHandlerWithSpecificQueryType()
+        {
+            var container = new ServiceContainer();
+            container.RegisterQueryHandlers();
+            using (var scope = container.BeginScope())
+            {
+                var queryExecutor = scope.GetInstance<IQueryExecutor>();
+                var sampleQuery = new SampleOpenGenericQuery();
+                var result = await queryExecutor.ExecuteAsync(sampleQuery);
+                sampleQuery.WasHandled.Should().BeTrue();
+            }
+        }
+
+        [Fact]
+        public async Task ShouldExecuteAbstractedOpenGenericCommandCommandHandlerWithAbstractCommandType()
+        {
+            var container = new ServiceContainer();
+            container.RegisterCommandHandlers();
+            using (var scope = container.BeginScope())
+            {
+                var commandExecutor = scope.GetInstance<ICommandExecutor>();
+                ISampleOpenGenericCommand<SampleOpenGenericCommandDataType> command = new SampleOpenGenericCommand();
+                await commandExecutor.ExecuteAsync(command);
+                command.WasHandled.Should().BeTrue();
+            }
+        }
+
+        [Fact]
+        public async Task ShouldExecuteAbstractedOpenGenericQueryQueryHandlerWithAbstractQueryType()
+        {
+            var container = new ServiceContainer();
+            container.RegisterQueryHandlers();
+            using (var scope = container.BeginScope())
+            {
+                var queryExecutor = scope.GetInstance<IQueryExecutor>();
+                ISampleOpenGenericQuery<SampleOpenGenericQueryDataType> sampleQuery = new SampleOpenGenericQuery();
+                var result = await queryExecutor.ExecuteAsync(sampleQuery);
+                sampleQuery.WasHandled.Should().BeTrue();
+            }
+        }
     }
 }
